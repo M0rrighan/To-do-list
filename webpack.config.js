@@ -35,7 +35,7 @@ module.exports = {
         options: {
           limit: 8192,
           name: '[name].[ext]',
-          outputPath: 'assets', //the icons will be stored in dist/assets folder
+          outputPath: 'assets', // the icons will be stored in dist/assets folder
         },
       },
     ],
