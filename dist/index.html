@@ -4,14 +4,38 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
   <title>To Do List</title>
 <script defer src="main.js"></script></head>
 
 <body>
   <div class="list_container">
+    <div class="title">
+      <p>Today's To Do</p>
+      <i class="material-icons">autorenew</i>
+    </div>
+    <div class="oneMoreTask">
+      <input type="text" name="add_item" id="add_item" class="add_item" placeholder="Add to your list...">
+      <i class="material-icons">keyboard_return</i>
+    </div>
     <ul class="tasks_list">
-
+      <li>
+        <input data-done="false" type="checkbox" value="false" id="0" name="completed" class="checkbox">
+        <p class="description">First Task of today</p>
+        <i class="material-icons">more_vert</i>
+      </li>
+      <li>
+        <input data-done="false" type="checkbox" value="false" id="1" name="completed" class="checkbox">
+        <p class="description">Second Task of today</p>
+        <i class="material-icons">more_vert</i>
+      </li>
+      <li>
+        <input data-done="false" type="checkbox" value="false" id="2" name="completed" class="checkbox">
+        <p class="description">Third Task of today</p>
+        <i class="material-icons">delete_forever</i>
+      </li>
     </ul>
+    <div class="clearBtn">Clear all completed</div>
   </div>
 </body>
 

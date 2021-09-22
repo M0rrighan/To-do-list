@@ -2,7 +2,7 @@ import './style.css';
 
 require('webpack-icons-installer/google.js');
 
-const tasksList = document.querySelector('.tasks_list');
+// const tasksList = document.querySelector('.tasks_list');
 const TASKS = [
   {
     index: 0,
@@ -21,6 +21,4 @@ const TASKS = [
   },
 ];
 
-console.log(TASKS);
-
-tasksList.innerHTML = '<li>First item in list</li>';
+// tasksList.innerHTML = '<li>First item in list</li>';
