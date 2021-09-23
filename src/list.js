@@ -12,6 +12,7 @@ export default class ListOfTasks {
 
   updateList(newReplacingList) {
     this.tasksList = newReplacingList;
+    return this.tasksList;
   }
 
   getList() {
@@ -23,7 +24,8 @@ export default class ListOfTasks {
     return sortedList.sort((a, b) => (a.index > b.index ? 1 : -1));
   }
 
-  changeStatus(index) {
+  changeStatusDone(index) {
     this.tasksList[index].done = !this.tasksList[index].done;
+    return this.tasksList;
   }
 }

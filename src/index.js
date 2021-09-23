@@ -3,4 +3,6 @@ import Interact from './interact';
 import './style.css';
 
 const tasks = new ListOfTasks();
-Interact.populateUlTasksList(tasks);
+window.onload = () => {
+  Interact.populateUlTasksList(tasks);
+};
