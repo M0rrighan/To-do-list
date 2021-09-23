@@ -548,8 +548,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _style_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1);
 
 
-// require('webpack-icons-installer');
-
 const tasksList = document.querySelector('.tasks_list');
 const TASKS = [
   {
