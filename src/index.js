@@ -1,6 +1,6 @@
 import './style.css';
 
-require('webpack-icons-installer/google.js');
+require('webpack-icons-installer');
 
 const tasksList = document.querySelector('.tasks_list');
 const TASKS = [
