@@ -1,4 +1,5 @@
-import Elmnts from './elements';
+// eslint-disable-next-line import/no-cycle
+import Elmnts from './elements.js';
 
 export default class Interact {
   static populateUlTasksList(list) {

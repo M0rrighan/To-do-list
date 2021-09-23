@@ -1,6 +1,7 @@
-import ListOfTasks from './list';
-import Storage from './storage';
-import Interact from './interact';
+// eslint-disable-next-line import/no-cycle
+import Interact from './interact.js';
+import ListOfTasks from './list.js';
+import Storage from './storage.js';
 
 export default class Elmnts {
   static createCkBox(taskIndex, taskStatusDone, listToUpdate) {
@@ -36,15 +37,8 @@ export default class Elmnts {
     this.task = task;
     const li = document.createElement('li');
     li.id = this.task.index;
-    const ckbox = this.createCkBox(
-      this.task.index,
-      this.task.done,
-      listToUpdate
-    );
-    const descriptiveP = this.createTaskDescr(
-      this.task.index,
-      this.task.description
-    );
+    const ckbox = this.createCkBox(this.task.index, this.task.done, listToUpdate);
+    const descriptiveP = this.createTaskDescr(this.task.index, this.task.description);
     const icon = this.createIcon(this.task.index);
     li.appendChild(ckbox);
     li.appendChild(descriptiveP);

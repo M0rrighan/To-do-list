@@ -1,5 +1,5 @@
-import Storage from './storage';
-import DefaultDemoList from './demoList';
+import Storage from './storage.js';
+import DefaultDemoList from './demoList.js';
 
 export default class ListOfTasks {
   constructor(storageKey = 'ToDoList') {

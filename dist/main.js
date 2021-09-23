@@ -7,21 +7,209 @@
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ ListOfTasks)
+/* harmony export */ });
+/* harmony import */ var _storage_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
+/* harmony import */ var _demoList_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(3);
+
+
+
+class ListOfTasks {
+  constructor(storageKey = 'ToDoList') {
+    if (_storage_js__WEBPACK_IMPORTED_MODULE_0__["default"].existInStorage(storageKey)) {
+      this.tasksList = _storage_js__WEBPACK_IMPORTED_MODULE_0__["default"].readFromStorage(storageKey);
+    } else {
+      this.tasksList = _demoList_js__WEBPACK_IMPORTED_MODULE_1__["default"].getExampleList();
+    }
+  }
+
+  updateList(newReplacingList) {
+    this.tasksList = newReplacingList;
+    return this.tasksList;
+  }
+
+  getList() {
+    return this.tasksList;
+  }
+
+  getListSorted() {
+    const sortedList = this.tasksList;
+    return sortedList.sort((a, b) => (a.index > b.index ? 1 : -1));
+  }
+
+  changeStatusDone(index) {
+    this.tasksList[index].done = !this.tasksList[index].done;
+    return this.tasksList;
+  }
+}
+
+
+/***/ }),
+/* 2 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Storage)
+/* harmony export */ });
+class Storage {
+  static saveToStorage(objToStore, name = 'ToDoList') {
+    localStorage.setItem(name, JSON.stringify(objToStore));
+  }
+
+  static readFromStorage(name = 'ToDoList') {
+    return JSON.parse(localStorage.getItem(name));
+  }
+
+  static existInStorage(name = 'ToDoList') {
+    return this.readFromStorage(name) != null;
+  }
+}
+
+
+/***/ }),
+/* 3 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ DefaultDemoList)
+/* harmony export */ });
+class DefaultDemoList {
+  static getExampleList() {
+    return [
+      {
+        index: 0,
+        description: 'First task',
+        done: false,
+      },
+      {
+        index: 2,
+        description: 'Third task',
+        done: false,
+      },
+      {
+        index: 1,
+        description: 'Second task',
+        done: false,
+      },
+    ];
+  }
+}
+
+
+/***/ }),
+/* 4 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Interact)
+/* harmony export */ });
+/* harmony import */ var _elements_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(5);
+// eslint-disable-next-line import/no-cycle
+
+
+class Interact {
+  static populateUlTasksList(list) {
+    this.tasksList = document.querySelector('.tasks_list');
+    this.tasksList.innerHTML = '';
+
+    list.getListSorted().forEach((task) => {
+      const listItem = _elements_js__WEBPACK_IMPORTED_MODULE_0__["default"].createLi(task, list);
+      if (task.done) {
+        listItem.classList.add('done');
+      } else {
+        listItem.classList.remove('done');
+      }
+      this.tasksList.appendChild(listItem);
+    });
+  }
+}
+
+
+/***/ }),
+/* 5 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Elmnts)
+/* harmony export */ });
+/* harmony import */ var _interact_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
+/* harmony import */ var _list_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(1);
+/* harmony import */ var _storage_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(2);
+// eslint-disable-next-line import/no-cycle
+
+
+
+
+class Elmnts {
+  static createCkBox(taskIndex, taskStatusDone, listToUpdate) {
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.className = 'checkbox';
+    checkbox.checked = taskStatusDone;
+    checkbox.addEventListener('change', () => {
+      const updatedList = listToUpdate.changeStatusDone(taskIndex);
+      _storage_js__WEBPACK_IMPORTED_MODULE_2__["default"].saveToStorage(updatedList);
+      _interact_js__WEBPACK_IMPORTED_MODULE_0__["default"].populateUlTasksList(new _list_js__WEBPACK_IMPORTED_MODULE_1__["default"]());
+    });
+    return checkbox;
+  }
+
+  static createTaskDescr(taskIndex, taskDescription) {
+    const description = document.createElement('p');
+    description.dataset.referTo = taskIndex;
+    description.className = 'description';
+    description.innerText = taskDescription;
+    return description;
+  }
+
+  static createIcon(taskIndex) {
+    const icon = document.createElement('i');
+    icon.dataset.referTo = taskIndex;
+    icon.className = 'material-icons';
+    icon.textContent = 'more_vert';
+    return icon;
+  }
+
+  static createLi(task, listToUpdate) {
+    this.task = task;
+    const li = document.createElement('li');
+    li.id = this.task.index;
+    const ckbox = this.createCkBox(this.task.index, this.task.done, listToUpdate);
+    const descriptiveP = this.createTaskDescr(this.task.index, this.task.description);
+    const icon = this.createIcon(this.task.index);
+    li.appendChild(ckbox);
+    li.appendChild(descriptiveP);
+    li.appendChild(icon);
+    return li;
+  }
+}
+
+
+/***/ }),
+/* 6 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(7);
 /* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(3);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(8);
 /* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(4);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(9);
 /* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(5);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(10);
 /* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(6);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(11);
 /* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(7);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(12);
 /* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var _node_modules_css_loader_dist_cjs_js_style_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(8);
+/* harmony import */ var _node_modules_css_loader_dist_cjs_js_style_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(13);
 
       
       
@@ -52,7 +240,7 @@ var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js
 
 
 /***/ }),
-/* 2 */
+/* 7 */
 /***/ ((module) => {
 
 
@@ -161,7 +349,7 @@ module.exports = function (list, options) {
 };
 
 /***/ }),
-/* 3 */
+/* 8 */
 /***/ ((module) => {
 
 
@@ -236,7 +424,7 @@ function domAPI(options) {
 module.exports = domAPI;
 
 /***/ }),
-/* 4 */
+/* 9 */
 /***/ ((module) => {
 
 
@@ -280,7 +468,7 @@ function insertBySelector(insert, style) {
 module.exports = insertBySelector;
 
 /***/ }),
-/* 5 */
+/* 10 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 
@@ -297,7 +485,7 @@ function setAttributesWithoutAttributes(styleElement) {
 module.exports = setAttributesWithoutAttributes;
 
 /***/ }),
-/* 6 */
+/* 11 */
 /***/ ((module) => {
 
 
@@ -313,7 +501,7 @@ function insertStyleElement(options) {
 module.exports = insertStyleElement;
 
 /***/ }),
-/* 7 */
+/* 12 */
 /***/ ((module) => {
 
 
@@ -334,16 +522,16 @@ function styleTagTransform(css, styleElement) {
 module.exports = styleTagTransform;
 
 /***/ }),
-/* 8 */
+/* 13 */
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(14);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(10);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(15);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
 // Imports
 
@@ -356,7 +544,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, "* {\r\n  box-sizing: border-box;\r\n  
 
 
 /***/ }),
-/* 9 */
+/* 14 */
 /***/ ((module) => {
 
 
@@ -366,7 +554,7 @@ module.exports = function (i) {
 };
 
 /***/ }),
-/* 10 */
+/* 15 */
 /***/ ((module) => {
 
 
@@ -545,54 +733,16 @@ var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
 (() => {
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _style_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1);
+/* harmony import */ var _list_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1);
+/* harmony import */ var _interact_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(4);
+/* harmony import */ var _style_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(6);
 
 
-const tasksList = document.querySelector('.tasks_list');
-const TASKS = [
-  {
-    index: 0,
-    description: 'First task',
-    completed: false,
-  },
-  {
-    index: 2,
-    description: 'Third task',
-    completed: false,
-  },
-  {
-    index: 1,
-    description: 'Second task',
-    completed: false,
-  },
-];
 
-function sortAscending(list, parametar = 'index') {
-  const arrayToSort = [...list];
-  return arrayToSort.sort((a, b) => (a[parametar] > b[parametar] ? 1 : -1));
-}
 
-function createLi(task) {
-  const { index, description, completed } = task;
-  const li = document.createElement('li');
-  li.id = index;
-  li.innerHTML = `
-  <input data-done="${completed}" 
-         data-referTo="${index}" 
-         type="checkbox" 
-         value="false" 
-         name="TaskCompleted" 
-         class="checkbox">
-  <p data-referTo="${index}" class="description">${description}</p>
-  <i data-referTo="${index}" class="material-icons">more_vert</i>
-  `;
-  return li;
-}
-
+const tasks = new _list_js__WEBPACK_IMPORTED_MODULE_0__["default"]();
 window.onload = () => {
-  sortAscending(TASKS).forEach((task) => {
-    tasksList.appendChild(createLi(task));
-  });
+  _interact_js__WEBPACK_IMPORTED_MODULE_1__["default"].populateUlTasksList(tasks);
 };
 
 })();
