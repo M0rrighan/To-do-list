@@ -24,8 +24,9 @@ body {
 .list_container {
   width: 90%;
   max-width: 30rem;
-  box-shadow: 0.25rem 0.25rem 1rem rgba(0, 0, 0, 0.08),
-    -0.25rem -0.05rem 1rem 0px rgba(0, 0, 0, 0.08);
+  box-shadow:
+    0.25rem 0.25rem 1rem rgba(0, 0, 0, 0.08),
+    -0.25rem -0.05rem 1rem 0 rgba(0, 0, 0, 0.08);
 }
 
 .list_container > *,
