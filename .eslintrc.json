@@ -27,6 +27,5 @@
   "ignorePatterns": [
     "dist/",
     "build/"
-  ],
-  "import/no-unresolved": "off"
+  ]
 }
