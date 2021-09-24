@@ -1,12 +1,14 @@
+// eslint-disable-next-line import/no-cycle
+import Interact from './interact.js';
 import Storage from './storage.js';
-import DefaultDemoList from './demoList.js';
+import Task from './task.js';
 
 export default class ListOfTasks {
   constructor(storageKey = 'ToDoList') {
     if (Storage.existInStorage(storageKey)) {
       this.tasksList = Storage.readFromStorage(storageKey);
     } else {
-      this.tasksList = DefaultDemoList.getExampleList();
+      this.tasksList = [];
     }
   }
 
@@ -27,5 +29,26 @@ export default class ListOfTasks {
   changeStatusDone(index) {
     this.tasksList[index].done = !this.tasksList[index].done;
     return this.tasksList;
+  }
+
+  addToList(descr, index = this.tasksList.length, done = false) {
+    this.tasksList.push(new Task(descr, index, done));
+    Storage.saveToStorage(this.tasksList);
+    Interact.populateUlTasksList(new ListOfTasks());
+  }
+
+  overrideIndexes(list) {
+    this.list = list;
+    this.list.forEach((task, i) => {
+      task.index = i;
+    });
+
+    return this.list;
+  }
+
+  removeAllDone() {
+    const filtered = this.tasksList.filter((task) => task.done === false);
+    Storage.saveToStorage(this.overrideIndexes(filtered));
+    Interact.populateUlTasksList(new ListOfTasks());
   }
 }
