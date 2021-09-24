@@ -21,14 +21,18 @@ export default class Interact {
     const addInput = document.getElementById('add_item');
     addInput.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') {
-        new ListOfTasks().addToList(addInput.value);
-        addInput.value = '';
+        if (addInput.value.length) {
+          new ListOfTasks().addToList(addInput.value);
+          addInput.value = '';
+        }
       }
     });
     const addIcon = document.querySelector('.oneMoreTask i');
     addIcon.addEventListener('click', () => {
-      new ListOfTasks().addToList(addInput.value);
-      addInput.value = '';
+      if (addInput.value.length) {
+        new ListOfTasks().addToList(addInput.value);
+        addInput.value = '';
+      }
     });
   }
 
