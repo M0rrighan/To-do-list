@@ -41,7 +41,7 @@ body {
 }
 
 .list_container i {
-  color: rgba(0, 0, 0, 0.08);
+  color: rgba(0, 0, 0, 0.3);
   text-align: right;
   cursor: pointer;
 }
@@ -54,7 +54,7 @@ body {
 }
 
 .title i {
-  color: rgba(0, 0, 0, 0.25);
+  color: rgba(0, 0, 0, 0.45);
 }
 
 .tasks_list i {

@@ -1,5 +1,4 @@
 // eslint-disable-next-line import/no-cycle
-import Interact from './interact.js';
 import Storage from './storage.js';
 import Task from './task.js';
 
@@ -28,8 +27,8 @@ export default class ListOfTasks {
 
   addToList(descr, index = this.tasksList.length, done = false) {
     this.tasksList.push(new Task(descr, index, done));
-    Storage.saveToStorage(this.tasksList);
-    Interact.populateUlTasksList(new ListOfTasks());
+    Storage.saveAndUpdate(this.tasksList);
+    // Interact.populateUlTasksList(new ListOfTasks());
   }
 
   overrideIndexes(list) {
@@ -43,14 +42,14 @@ export default class ListOfTasks {
 
   removeAllDone() {
     const filtered = this.tasksList.filter((task) => task.done === false);
-    Storage.saveToStorage(this.overrideIndexes(filtered));
-    Interact.populateUlTasksList(new ListOfTasks());
+    Storage.saveAndUpdate(this.overrideIndexes(filtered));
+    // Interact.populateUlTasksList(new ListOfTasks());
   }
 
   removeByIndex(ind) {
     const filtered = this.tasksList.filter((task) => task.index !== ind);
-    Storage.saveToStorage(this.overrideIndexes(filtered));
-    Interact.populateUlTasksList(new ListOfTasks());
+    Storage.saveAndUpdate(this.overrideIndexes(filtered));
+    // Interact.populateUlTasksList(new ListOfTasks());
   }
 
   editDescription(index, newDescription) {

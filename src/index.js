@@ -6,3 +6,5 @@ const tasks = new ListOfTasks();
 window.onload = () => {
   Interact.populateUlTasksList(tasks);
 };
+Interact.listenForNewItems();
+Interact.listenClearBtn();

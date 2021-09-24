@@ -25,7 +25,6 @@ export default class Interact {
         addInput.value = '';
       }
     });
-
     const addIcon = document.querySelector('.oneMoreTask i');
     addIcon.addEventListener('click', () => {
       new ListOfTasks().addToList(addInput.value);
@@ -35,8 +34,7 @@ export default class Interact {
 
   static listenClearBtn() {
     const clearBtn = document.querySelector('.clearBtn');
-    clearBtn.addEventListener('click', (e) => {
-      console.log(e.target);
+    clearBtn.addEventListener('click', () => {
       new ListOfTasks().removeAllDone();
     });
   }

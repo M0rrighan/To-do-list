@@ -1,6 +1,5 @@
 /* eslint-disable import/no-cycle */
-import Interact from './interact.js';
-import ListOfTasks from './list.js';
+// import Interact from './interact.js';
 import Storage from './storage.js';
 
 export default class Elmnts {
@@ -11,8 +10,8 @@ export default class Elmnts {
     checkbox.checked = taskStatusDone;
     checkbox.addEventListener('change', () => {
       const updatedList = listToUpdate.changeStatusDone(taskIndex);
-      Storage.saveToStorage(updatedList);
-      Interact.populateUlTasksList(new ListOfTasks());
+      Storage.saveAndUpdate(updatedList);
+      // Interact.populateUlTasksList(new ListOfTasks());
     });
     return checkbox;
   }
@@ -27,8 +26,8 @@ export default class Elmnts {
     description.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') {
         const updatedList = listToUpdate.editDescription(taskIndex, e.target.innerText);
-        Storage.saveToStorage(updatedList);
-        Interact.populateUlTasksList(new ListOfTasks());
+        Storage.saveAndUpdate(updatedList);
+        // Interact.populateUlTasksList(new ListOfTasks());
       }
     });
     return description;
