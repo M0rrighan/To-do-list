@@ -12,11 +12,6 @@ export default class ListOfTasks {
     }
   }
 
-  updateList(newReplacingList) {
-    this.tasksList = newReplacingList;
-    return this.tasksList;
-  }
-
   getList() {
     return this.tasksList;
   }
@@ -50,5 +45,16 @@ export default class ListOfTasks {
     const filtered = this.tasksList.filter((task) => task.done === false);
     Storage.saveToStorage(this.overrideIndexes(filtered));
     Interact.populateUlTasksList(new ListOfTasks());
+  }
+
+  removeByIndex(ind) {
+    const filtered = this.tasksList.filter((task) => task.index !== ind);
+    Storage.saveToStorage(this.overrideIndexes(filtered));
+    Interact.populateUlTasksList(new ListOfTasks());
+  }
+
+  editDescription(index, newDescription) {
+    this.tasksList[index].description = newDescription;
+    return this.tasksList;
   }
 }
