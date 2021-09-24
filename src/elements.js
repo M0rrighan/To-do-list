@@ -1,4 +1,4 @@
-// eslint-disable-next-line import/no-cycle
+/* eslint-disable import/no-cycle */
 import Interact from './interact.js';
 import ListOfTasks from './list.js';
 import Storage from './storage.js';
@@ -17,11 +17,20 @@ export default class Elmnts {
     return checkbox;
   }
 
-  static createTaskDescr(taskIndex, taskDescription) {
+  static createTaskDescr(taskIndex, taskDescription, listToUpdate) {
     const description = document.createElement('p');
+    description.contentEditable = true;
+    description.style.outline = 'none';
     description.dataset.referTo = taskIndex;
     description.className = 'description';
     description.innerText = taskDescription;
+    description.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        const updatedList = listToUpdate.editDescription(taskIndex, e.target.innerText);
+        Storage.saveToStorage(updatedList);
+        Interact.populateUlTasksList(new ListOfTasks());
+      }
+    });
     return description;
   }
 
@@ -38,7 +47,7 @@ export default class Elmnts {
     const li = document.createElement('li');
     li.id = this.task.index;
     const ckbox = this.createCkBox(this.task.index, this.task.done, listToUpdate);
-    const descriptiveP = this.createTaskDescr(this.task.index, this.task.description);
+    const descriptiveP = this.createTaskDescr(this.task.index, this.task.description, listToUpdate);
     const icon = this.createIcon(this.task.index);
     li.appendChild(ckbox);
     li.appendChild(descriptiveP);
