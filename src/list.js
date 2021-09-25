@@ -1,6 +1,6 @@
 // eslint-disable-next-line import/no-cycle
 import Storage from './storage.js';
-import Task from './task.js';
+// import Task from './task.js';
 
 export default class ListOfTasks {
   constructor(storageKey = 'ToDoList') {
@@ -20,40 +20,36 @@ export default class ListOfTasks {
     return sortedList.sort((a, b) => (a.index > b.index ? 1 : -1));
   }
 
+  // addToList(descr, index = this.tasksList.length, done = false) {
+  //   this.tasksList.push(new Task(descr, index, done));
+  //   Storage.saveAndUpdate(this.tasksList);
+  // }
+
   changeStatusDone(index) {
     this.tasksList[index].done = !this.tasksList[index].done;
     return this.tasksList;
   }
 
-  addToList(descr, index = this.tasksList.length, done = false) {
-    this.tasksList.push(new Task(descr, index, done));
-    Storage.saveAndUpdate(this.tasksList);
-    // Interact.populateUlTasksList(new ListOfTasks());
-  }
+  // editDescription(index, newDescription) {
+  //   this.tasksList[index].description = newDescription;
+  //   return this.tasksList;
+  // }
 
-  overrideIndexes(list) {
-    this.list = list;
-    this.list.forEach((task, i) => {
-      task.index = i;
-    });
+  // overrideIndexes(list) {
+  //   this.list = list;
+  //   this.list.forEach((task, i) => {
+  //     task.index = i;
+  //   });
+  //   return this.list;
+  // }
 
-    return this.list;
-  }
+  // removeByIndex(ind) {
+  //   const filtered = this.tasksList.filter((task) => task.index !== ind);
+  //   Storage.saveAndUpdate(this.overrideIndexes(filtered));
+  // }
 
-  removeAllDone() {
-    const filtered = this.tasksList.filter((task) => task.done === false);
-    Storage.saveAndUpdate(this.overrideIndexes(filtered));
-    // Interact.populateUlTasksList(new ListOfTasks());
-  }
-
-  removeByIndex(ind) {
-    const filtered = this.tasksList.filter((task) => task.index !== ind);
-    Storage.saveAndUpdate(this.overrideIndexes(filtered));
-    // Interact.populateUlTasksList(new ListOfTasks());
-  }
-
-  editDescription(index, newDescription) {
-    this.tasksList[index].description = newDescription;
-    return this.tasksList;
-  }
+  // removeAllDone() {
+  //   const filtered = this.tasksList.filter((task) => task.done === false);
+  //   Storage.saveAndUpdate(this.overrideIndexes(filtered));
+  // }
 }

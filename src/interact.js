@@ -1,6 +1,7 @@
 /* eslint-disable import/no-cycle */
 import Elmnts from './elements.js';
-import ListOfTasks from './list.js';
+import ListManipulation from './manipulateList.js';
+// import ListOfTasks from './list.js';
 
 export default class Interact {
   static populateUlTasksList(list) {
@@ -22,7 +23,7 @@ export default class Interact {
     addInput.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') {
         if (addInput.value.length) {
-          new ListOfTasks().addToList(addInput.value);
+          new ListManipulation().addToList(addInput.value);
           addInput.value = '';
         }
       }
@@ -30,7 +31,7 @@ export default class Interact {
     const addIcon = document.querySelector('.oneMoreTask i');
     addIcon.addEventListener('click', () => {
       if (addInput.value.length) {
-        new ListOfTasks().addToList(addInput.value);
+        new ListManipulation().addToList(addInput.value);
         addInput.value = '';
       }
     });
@@ -39,7 +40,7 @@ export default class Interact {
   static listenClearBtn() {
     const clearBtn = document.querySelector('.clearBtn');
     clearBtn.addEventListener('click', () => {
-      new ListOfTasks().removeAllDone();
+      new ListManipulation().removeAllDone();
     });
   }
 }
