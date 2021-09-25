@@ -7,25 +7,71 @@
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ ListManipulation)
+/* harmony export */ });
+/* harmony import */ var _list_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
+/* harmony import */ var _storage_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(3);
+/* harmony import */ var _task_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(6);
+/* eslint-disable import/no-cycle */
+
+
+
+
+class ListManipulation extends _list_js__WEBPACK_IMPORTED_MODULE_0__["default"] {
+  constructor(storageKey = 'ToDoList') {
+    super(storageKey);
+  }
+
+  addToList(descr, index = this.tasksList.length, done = false) {
+    this.tasksList.push(new _task_js__WEBPACK_IMPORTED_MODULE_2__["default"](descr, index, done));
+    _storage_js__WEBPACK_IMPORTED_MODULE_1__["default"].saveAndUpdate(this.tasksList);
+  }
+
+  editDescription(index, newDescription) {
+    this.tasksList[index].description = newDescription;
+    return this.tasksList;
+  }
+
+  overrideIndexes(list) {
+    this.list = list;
+    this.list.forEach((task, i) => {
+      task.index = i;
+    });
+    return this.list;
+  }
+
+  removeByIndex(ind) {
+    const filtered = this.tasksList.filter((task) => task.index !== ind);
+    _storage_js__WEBPACK_IMPORTED_MODULE_1__["default"].saveAndUpdate(this.overrideIndexes(filtered));
+  }
+
+  removeAllDone() {
+    const filtered = this.tasksList.filter((task) => task.done === false);
+    _storage_js__WEBPACK_IMPORTED_MODULE_1__["default"].saveAndUpdate(this.overrideIndexes(filtered));
+  }
+}
+
+
+/***/ }),
+/* 2 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ ListOfTasks)
 /* harmony export */ });
-/* harmony import */ var _storage_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
-/* harmony import */ var _demoList_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(3);
+/* harmony import */ var _storage_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(3);
+// eslint-disable-next-line import/no-cycle
 
-
+// import Task from './task.js';
 
 class ListOfTasks {
   constructor(storageKey = 'ToDoList') {
     if (_storage_js__WEBPACK_IMPORTED_MODULE_0__["default"].existInStorage(storageKey)) {
       this.tasksList = _storage_js__WEBPACK_IMPORTED_MODULE_0__["default"].readFromStorage(storageKey);
     } else {
-      this.tasksList = _demoList_js__WEBPACK_IMPORTED_MODULE_1__["default"].getExampleList();
+      this.tasksList = [];
     }
-  }
-
-  updateList(newReplacingList) {
-    this.tasksList = newReplacingList;
-    return this.tasksList;
   }
 
   getList() {
@@ -37,24 +83,59 @@ class ListOfTasks {
     return sortedList.sort((a, b) => (a.index > b.index ? 1 : -1));
   }
 
+  // addToList(descr, index = this.tasksList.length, done = false) {
+  //   this.tasksList.push(new Task(descr, index, done));
+  //   Storage.saveAndUpdate(this.tasksList);
+  // }
+
   changeStatusDone(index) {
     this.tasksList[index].done = !this.tasksList[index].done;
     return this.tasksList;
   }
+
+  // editDescription(index, newDescription) {
+  //   this.tasksList[index].description = newDescription;
+  //   return this.tasksList;
+  // }
+
+  // overrideIndexes(list) {
+  //   this.list = list;
+  //   this.list.forEach((task, i) => {
+  //     task.index = i;
+  //   });
+  //   return this.list;
+  // }
+
+  // removeByIndex(ind) {
+  //   const filtered = this.tasksList.filter((task) => task.index !== ind);
+  //   Storage.saveAndUpdate(this.overrideIndexes(filtered));
+  // }
+
+  // removeAllDone() {
+  //   const filtered = this.tasksList.filter((task) => task.done === false);
+  //   Storage.saveAndUpdate(this.overrideIndexes(filtered));
+  // }
 }
 
 
 /***/ }),
-/* 2 */
+/* 3 */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ Storage)
 /* harmony export */ });
+/* harmony import */ var _list_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
+/* harmony import */ var _interact_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(4);
+/* eslint-disable import/no-cycle */
+
+
+
 class Storage {
-  static saveToStorage(objToStore, name = 'ToDoList') {
+  static saveAndUpdate(objToStore, name = 'ToDoList') {
     localStorage.setItem(name, JSON.stringify(objToStore));
+    _interact_js__WEBPACK_IMPORTED_MODULE_1__["default"].populateUlTasksList(new _list_js__WEBPACK_IMPORTED_MODULE_0__["default"]());
   }
 
   static readFromStorage(name = 'ToDoList') {
@@ -68,37 +149,6 @@ class Storage {
 
 
 /***/ }),
-/* 3 */
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ DefaultDemoList)
-/* harmony export */ });
-class DefaultDemoList {
-  static getExampleList() {
-    return [
-      {
-        index: 0,
-        description: 'First task',
-        done: false,
-      },
-      {
-        index: 2,
-        description: 'Third task',
-        done: false,
-      },
-      {
-        index: 1,
-        description: 'Second task',
-        done: false,
-      },
-    ];
-  }
-}
-
-
-/***/ }),
 /* 4 */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
@@ -107,14 +157,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (/* binding */ Interact)
 /* harmony export */ });
 /* harmony import */ var _elements_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(5);
-// eslint-disable-next-line import/no-cycle
+/* harmony import */ var _manipulateList_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(1);
+/* eslint-disable import/no-cycle */
 
+
+// import ListOfTasks from './list.js';
 
 class Interact {
   static populateUlTasksList(list) {
     this.tasksList = document.querySelector('.tasks_list');
     this.tasksList.innerHTML = '';
-
     list.getListSorted().forEach((task) => {
       const listItem = _elements_js__WEBPACK_IMPORTED_MODULE_0__["default"].createLi(task, list);
       if (task.done) {
@@ -123,6 +175,32 @@ class Interact {
         listItem.classList.remove('done');
       }
       this.tasksList.appendChild(listItem);
+    });
+  }
+
+  static listenForNewItems() {
+    const addInput = document.getElementById('add_item');
+    addInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        if (addInput.value.length) {
+          new _manipulateList_js__WEBPACK_IMPORTED_MODULE_1__["default"]().addToList(addInput.value);
+          addInput.value = '';
+        }
+      }
+    });
+    const addIcon = document.querySelector('.oneMoreTask i');
+    addIcon.addEventListener('click', () => {
+      if (addInput.value.length) {
+        new _manipulateList_js__WEBPACK_IMPORTED_MODULE_1__["default"]().addToList(addInput.value);
+        addInput.value = '';
+      }
+    });
+  }
+
+  static listenClearBtn() {
+    const clearBtn = document.querySelector('.clearBtn');
+    clearBtn.addEventListener('click', () => {
+      new _manipulateList_js__WEBPACK_IMPORTED_MODULE_1__["default"]().removeAllDone();
     });
   }
 }
@@ -136,11 +214,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ Elmnts)
 /* harmony export */ });
-/* harmony import */ var _interact_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
-/* harmony import */ var _list_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(1);
-/* harmony import */ var _storage_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(2);
-// eslint-disable-next-line import/no-cycle
-
+/* harmony import */ var _storage_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(3);
+/* harmony import */ var _manipulateList_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(1);
+/* eslint-disable import/no-cycle */
 
 
 
@@ -152,17 +228,24 @@ class Elmnts {
     checkbox.checked = taskStatusDone;
     checkbox.addEventListener('change', () => {
       const updatedList = listToUpdate.changeStatusDone(taskIndex);
-      _storage_js__WEBPACK_IMPORTED_MODULE_2__["default"].saveToStorage(updatedList);
-      _interact_js__WEBPACK_IMPORTED_MODULE_0__["default"].populateUlTasksList(new _list_js__WEBPACK_IMPORTED_MODULE_1__["default"]());
+      _storage_js__WEBPACK_IMPORTED_MODULE_0__["default"].saveAndUpdate(updatedList);
     });
     return checkbox;
   }
 
   static createTaskDescr(taskIndex, taskDescription) {
     const description = document.createElement('p');
+    description.contentEditable = true;
+    description.style.outline = 'none';
     description.dataset.referTo = taskIndex;
     description.className = 'description';
     description.innerText = taskDescription;
+    description.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        const updatedList = new _manipulateList_js__WEBPACK_IMPORTED_MODULE_1__["default"]().editDescription(taskIndex, e.target.innerText);
+        _storage_js__WEBPACK_IMPORTED_MODULE_0__["default"].saveAndUpdate(updatedList);
+      }
+    });
     return description;
   }
 
@@ -179,11 +262,32 @@ class Elmnts {
     const li = document.createElement('li');
     li.id = this.task.index;
     const ckbox = this.createCkBox(this.task.index, this.task.done, listToUpdate);
-    const descriptiveP = this.createTaskDescr(this.task.index, this.task.description);
+    const descriptiveP = this.createTaskDescr(this.task.index, this.task.description, listToUpdate);
     const icon = this.createIcon(this.task.index);
     li.appendChild(ckbox);
     li.appendChild(descriptiveP);
     li.appendChild(icon);
+    li.addEventListener('click', () => {
+      // 1. reset style for all list items
+      const allLis = document.querySelectorAll('.tasks_list > *');
+      allLis.forEach((li) => {
+        li.style.backgroundColor = 'white';
+        li.children[2].textContent = 'more_vert';
+        li.children[2].style.cursor = 'move';
+      });
+
+      // 2. set style only for clicked
+      li.style.backgroundColor = 'hsl(40deg 91% 75% / 75%)';
+      icon.textContent = 'delete_forever';
+      icon.style.cursor = 'pointer';
+
+      // 3. event Listener for remove Button
+      icon.addEventListener('click', () => {
+        if (icon.textContent === 'delete_forever') {
+          new _manipulateList_js__WEBPACK_IMPORTED_MODULE_1__["default"]().removeByIndex(parseInt(icon.dataset.referTo, 10));
+        }
+      });
+    });
     return li;
   }
 }
@@ -195,21 +299,38 @@ class Elmnts {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Task)
+/* harmony export */ });
+class Task {
+  constructor(description, index, done) {
+    this.index = index;
+    this.description = description;
+    this.done = done;
+  }
+}
+
+
+/***/ }),
+/* 7 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(7);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(8);
 /* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(8);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(9);
 /* harmony import */ var _node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleDomAPI_js__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(9);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(10);
 /* harmony import */ var _node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertBySelector_js__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(10);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(11);
 /* harmony import */ var _node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_setAttributesWithoutAttributes_js__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(11);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(12);
 /* harmony import */ var _node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_insertStyleElement_js__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(12);
+/* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(13);
 /* harmony import */ var _node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_styleTagTransform_js__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var _node_modules_css_loader_dist_cjs_js_style_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(13);
+/* harmony import */ var _node_modules_css_loader_dist_cjs_js_style_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(14);
 
       
       
@@ -240,7 +361,7 @@ var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js
 
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ ((module) => {
 
 
@@ -349,7 +470,7 @@ module.exports = function (list, options) {
 };
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ ((module) => {
 
 
@@ -424,7 +545,7 @@ function domAPI(options) {
 module.exports = domAPI;
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ ((module) => {
 
 
@@ -468,7 +589,7 @@ function insertBySelector(insert, style) {
 module.exports = insertBySelector;
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 
@@ -485,7 +606,7 @@ function setAttributesWithoutAttributes(styleElement) {
 module.exports = setAttributesWithoutAttributes;
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ ((module) => {
 
 
@@ -501,7 +622,7 @@ function insertStyleElement(options) {
 module.exports = insertStyleElement;
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ ((module) => {
 
 
@@ -522,29 +643,29 @@ function styleTagTransform(css, styleElement) {
 module.exports = styleTagTransform;
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(14);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(15);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(15);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(16);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
 // Imports
 
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "* {\r\n  box-sizing: border-box;\r\n  margin: 0;\r\n  padding: 0;\r\n}\r\n\r\n* ul li {\r\n  list-style-type: none;\r\n}\r\n\r\nbody {\r\n  display: flex;\r\n  justify-content: center;\r\n  align-items: center;\r\n  height: 100vh;\r\n  font-family: 'Open Sans', 'Lucida Grande', tahoma, verdana, arial, sans-serif;\r\n  font-size: 0.9375rem;\r\n  font-weight: 400;\r\n  line-height: 1.25rem;\r\n  color: #545862;\r\n  background-color: #f6f6f6;\r\n}\r\n\r\n.list_container {\r\n  width: 90%;\r\n  max-width: 30rem;\r\n  box-shadow:\r\n    0.25rem 0.25rem 1rem rgba(0, 0, 0, 0.08),\r\n    -0.25rem -0.05rem 1rem 0 rgba(0, 0, 0, 0.08);\r\n}\r\n\r\n.list_container > *,\r\n.tasks_list li {\r\n  padding: 1rem;\r\n  border-bottom: 1px solid rgba(0, 0, 0, 0.08);\r\n  background-color: #fff;\r\n}\r\n\r\n.list_container > *:last-child {\r\n  background-color: transparent;\r\n}\r\n\r\n.list_container i {\r\n  color: rgba(0, 0, 0, 0.08);\r\n  text-align: right;\r\n  cursor: pointer;\r\n}\r\n\r\n.title,\r\n.oneMoreTask {\r\n  display: grid;\r\n  grid-template-columns: 90% 10%;\r\n  align-items: center;\r\n}\r\n\r\n.title i {\r\n  color: rgba(0, 0, 0, 0.25);\r\n}\r\n\r\n.tasks_list i {\r\n  cursor: move;\r\n}\r\n\r\n.oneMoreTask input,\r\n.oneMoreTask input:focus {\r\n  border: none;\r\n  outline: none;\r\n  height: 100%;\r\n  font-size: inherit;\r\n}\r\n\r\n.oneMoreTask .add_item {\r\n  font-style: italic;\r\n}\r\n\r\n.oneMoreTask .add_item::placeholder {\r\n  font-style: italic;\r\n  color: rgba(0, 0, 0, 0.25);\r\n}\r\n\r\n.tasks_list {\r\n  display: flex;\r\n  flex-direction: column;\r\n  padding: 0;\r\n}\r\n\r\n.tasks_list li {\r\n  display: grid;\r\n  grid-template-columns: 5% 85% 10%;\r\n  align-items: center;\r\n}\r\n\r\n.tasks_list li .description {\r\n  margin-left: 0.25rem;\r\n}\r\n\r\n.tasks_list li.done .description {\r\n  color: rgba(0, 0, 0, 0.45);\r\n  text-decoration: line-through;\r\n}\r\n\r\n.clearBtn {\r\n  text-align: center;\r\n  opacity: 0.5;\r\n  background-color: rgba(0, 0, 0, 0.25);\r\n  cursor: pointer;\r\n}\r\n\r\n.clearBtn:hover {\r\n  opacity: 1;\r\n  text-decoration: underline;\r\n}\r\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "* {\r\n  box-sizing: border-box;\r\n  margin: 0;\r\n  padding: 0;\r\n}\r\n\r\n* ul li {\r\n  list-style-type: none;\r\n}\r\n\r\nbody {\r\n  display: flex;\r\n  justify-content: center;\r\n  align-items: center;\r\n  height: 100vh;\r\n  font-family: 'Open Sans', 'Lucida Grande', tahoma, verdana, arial, sans-serif;\r\n  font-size: 0.9375rem;\r\n  font-weight: 400;\r\n  line-height: 1.25rem;\r\n  color: #545862;\r\n  background-color: #f6f6f6;\r\n}\r\n\r\n.list_container {\r\n  width: 90%;\r\n  max-width: 30rem;\r\n  box-shadow:\r\n    0.25rem 0.25rem 1rem rgba(0, 0, 0, 0.08),\r\n    -0.25rem -0.05rem 1rem 0 rgba(0, 0, 0, 0.08);\r\n}\r\n\r\n.list_container > *,\r\n.tasks_list li {\r\n  padding: 1rem;\r\n  border-bottom: 1px solid rgba(0, 0, 0, 0.08);\r\n  background-color: #fff;\r\n}\r\n\r\n.list_container > *:last-child {\r\n  background-color: transparent;\r\n}\r\n\r\n.list_container i {\r\n  color: rgba(0, 0, 0, 0.3);\r\n  text-align: right;\r\n  cursor: pointer;\r\n}\r\n\r\n.title,\r\n.oneMoreTask {\r\n  display: grid;\r\n  grid-template-columns: 90% 10%;\r\n  align-items: center;\r\n}\r\n\r\n.title i {\r\n  color: rgba(0, 0, 0, 0.45);\r\n}\r\n\r\n.tasks_list i {\r\n  cursor: move;\r\n}\r\n\r\n.oneMoreTask input,\r\n.oneMoreTask input:focus {\r\n  border: none;\r\n  outline: none;\r\n  height: 100%;\r\n  font-size: inherit;\r\n}\r\n\r\n.oneMoreTask .add_item {\r\n  font-style: italic;\r\n}\r\n\r\n.oneMoreTask .add_item::placeholder {\r\n  font-style: italic;\r\n  color: rgba(0, 0, 0, 0.25);\r\n}\r\n\r\n.tasks_list {\r\n  display: flex;\r\n  flex-direction: column;\r\n  padding: 0;\r\n}\r\n\r\n.tasks_list li {\r\n  display: grid;\r\n  grid-template-columns: 5% 85% 10%;\r\n  align-items: center;\r\n}\r\n\r\n.tasks_list li .description {\r\n  margin-left: 0.25rem;\r\n}\r\n\r\n.tasks_list li.done .description {\r\n  color: rgba(0, 0, 0, 0.45);\r\n  text-decoration: line-through;\r\n}\r\n\r\n.clearBtn {\r\n  text-align: center;\r\n  opacity: 0.5;\r\n  background-color: rgba(0, 0, 0, 0.25);\r\n  cursor: pointer;\r\n}\r\n\r\n.clearBtn:hover {\r\n  opacity: 1;\r\n  text-decoration: underline;\r\n}\r\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ ((module) => {
 
 
@@ -554,7 +675,7 @@ module.exports = function (i) {
 };
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ ((module) => {
 
 
@@ -733,17 +854,20 @@ var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
 (() => {
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _list_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1);
+/* harmony import */ var _manipulateList_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1);
 /* harmony import */ var _interact_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(4);
-/* harmony import */ var _style_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(6);
+/* harmony import */ var _style_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(7);
+// import ListOfTasks from './list.js';
 
 
 
 
-const tasks = new _list_js__WEBPACK_IMPORTED_MODULE_0__["default"]();
+const tasks = new _manipulateList_js__WEBPACK_IMPORTED_MODULE_0__["default"]();
 window.onload = () => {
   _interact_js__WEBPACK_IMPORTED_MODULE_1__["default"].populateUlTasksList(tasks);
 };
+_interact_js__WEBPACK_IMPORTED_MODULE_1__["default"].listenForNewItems();
+_interact_js__WEBPACK_IMPORTED_MODULE_1__["default"].listenClearBtn();
 
 })();
 

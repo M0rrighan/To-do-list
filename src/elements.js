@@ -1,7 +1,6 @@
-// eslint-disable-next-line import/no-cycle
-import Interact from './interact.js';
-import ListOfTasks from './list.js';
+/* eslint-disable import/no-cycle */
 import Storage from './storage.js';
+import ListManipulation from './manipulateList.js';
 
 export default class Elmnts {
   static createCkBox(taskIndex, taskStatusDone, listToUpdate) {
@@ -11,17 +10,24 @@ export default class Elmnts {
     checkbox.checked = taskStatusDone;
     checkbox.addEventListener('change', () => {
       const updatedList = listToUpdate.changeStatusDone(taskIndex);
-      Storage.saveToStorage(updatedList);
-      Interact.populateUlTasksList(new ListOfTasks());
+      Storage.saveAndUpdate(updatedList);
     });
     return checkbox;
   }
 
   static createTaskDescr(taskIndex, taskDescription) {
     const description = document.createElement('p');
+    description.contentEditable = true;
+    description.style.outline = 'none';
     description.dataset.referTo = taskIndex;
     description.className = 'description';
     description.innerText = taskDescription;
+    description.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        const updatedList = new ListManipulation().editDescription(taskIndex, e.target.innerText);
+        Storage.saveAndUpdate(updatedList);
+      }
+    });
     return description;
   }
 
@@ -38,11 +44,32 @@ export default class Elmnts {
     const li = document.createElement('li');
     li.id = this.task.index;
     const ckbox = this.createCkBox(this.task.index, this.task.done, listToUpdate);
-    const descriptiveP = this.createTaskDescr(this.task.index, this.task.description);
+    const descriptiveP = this.createTaskDescr(this.task.index, this.task.description, listToUpdate);
     const icon = this.createIcon(this.task.index);
     li.appendChild(ckbox);
     li.appendChild(descriptiveP);
     li.appendChild(icon);
+    li.addEventListener('click', () => {
+      // 1. reset style for all list items
+      const allLis = document.querySelectorAll('.tasks_list > *');
+      allLis.forEach((li) => {
+        li.style.backgroundColor = 'white';
+        li.children[2].textContent = 'more_vert';
+        li.children[2].style.cursor = 'move';
+      });
+
+      // 2. set style only for clicked
+      li.style.backgroundColor = 'hsl(40deg 91% 75% / 75%)';
+      icon.textContent = 'delete_forever';
+      icon.style.cursor = 'pointer';
+
+      // 3. event Listener for remove Button
+      icon.addEventListener('click', () => {
+        if (icon.textContent === 'delete_forever') {
+          new ListManipulation().removeByIndex(parseInt(icon.dataset.referTo, 10));
+        }
+      });
+    });
     return li;
   }
 }
