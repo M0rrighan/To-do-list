@@ -4,7 +4,7 @@ A simple yet powerful to-do list, inspired by the minimalist website.
 
 ## Live Demo
 
-[Live Demo Link](https://m0rrighan.github.io/To-do-list/dist/index.html)
+[Live Demo Link](https://m0rrighan.github.io/To-do-list/)
 
 ## Built With
 
