@@ -2,7 +2,6 @@
 import Storage from './storage.js';
 import ListManipulation from './manipulateList.js';
 import Interact from './interact.js';
-// import getDragStartEnd, { listenDragOver } from './dragDrop.js';
 
 export default class Elmnts {
   static createCkBox(taskIndex, taskStatusDone, listToUpdate) {
@@ -13,6 +12,7 @@ export default class Elmnts {
     checkbox.addEventListener('change', () => {
       const updatedList = listToUpdate.changeStatusDone(taskIndex);
       Storage.saveAndUpdate(updatedList);
+      Interact.updateDomRemoveDrag();
     });
     return checkbox;
   }
@@ -28,7 +28,7 @@ export default class Elmnts {
       if (e.key === 'Enter') {
         const updatedList = new ListManipulation().editDescription(taskIndex, e.target.innerText);
         Storage.saveAndUpdate(updatedList);
-        Interact.listenRemoveBtn();
+        Interact.updateDomRemoveDrag();
       }
     });
     return description;

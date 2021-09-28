@@ -112,7 +112,7 @@ body {
 }
 
 .draggable.dragging {
-  border: 1px solid red;
-  background-color: red;
-  opacity: 0.75;
+  border: 2px dashed hsl(40deg 91% 75%);
+  background-color: hsl(40deg 91% 75% / 35%);
+  opacity: 0.85;
 }

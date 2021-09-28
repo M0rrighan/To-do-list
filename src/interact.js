@@ -18,16 +18,6 @@ export default class Interact {
     });
   }
 
-  static addTask(element) {
-    if (element.value.length) {
-      new ListManipulation().addToList(element.value);
-      element.value = '';
-      this.listenRemoveBtn();
-      // this.listenDragStartEnd();
-      // this.listenDragOver();
-    }
-  }
-
   static listenForNewItems() {
     const addInput = document.getElementById('add_item');
     addInput.addEventListener('keypress', (e) => {
@@ -45,9 +35,48 @@ export default class Interact {
     const clearBtn = document.querySelector('.clearBtn');
     clearBtn.addEventListener('click', () => {
       new ListManipulation().removeAllDone();
-      this.listenRemoveBtn();
-      // this.listenDragStartEnd();
-      // this.listenDragOver();
+      this.updateDomRemoveDrag();
+    });
+  }
+
+  static listenRemoveBtn() {
+    const removeButtons = document.querySelectorAll('.tasks_list i');
+    removeButtons.forEach((removeBtn) => {
+      removeBtn.addEventListener('click', (e) => {
+        if (e.target.textContent === 'delete_forever') {
+          new ListManipulation().removeByIndex(parseInt(e.target.dataset.referTo, 10));
+          this.updateDomRemoveDrag();
+        }
+      });
+    });
+  }
+
+  static listenDragStartEnd() {
+    const draggables = document.querySelectorAll('.draggable');
+    draggables.forEach((draggable) => {
+      draggable.addEventListener('dragstart', () => {
+        draggable.classList.add('dragging');
+      });
+      draggable.addEventListener('dragend', () => {
+        draggable.classList.remove('dragging');
+        this.saveReorderedList();
+        this.populateUlTasksList(new ListManipulation());
+        this.changeStyleOnSelected();
+        this.updateDomRemoveDrag();
+      });
+    });
+  }
+
+  static listenDragOver(container) {
+    container.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      const afterElement = this.getDragAfterElement(container, e.clientY);
+      const draggable = document.querySelector('.dragging');
+      if (afterElement == null) {
+        container.appendChild(draggable);
+      } else {
+        container.insertBefore(draggable, afterElement);
+      }
     });
   }
 
@@ -67,52 +96,6 @@ export default class Interact {
     });
   }
 
-  static listenRemoveBtn() {
-    const removeButtons = document.querySelectorAll('.tasks_list i');
-    removeButtons.forEach((removeBtn) => {
-      console.log(removeBtn);
-      removeBtn.addEventListener('click', (e) => {
-        console.log(e.target.textContent);
-        if (e.target.textContent === 'delete_forever') {
-          new ListManipulation().removeByIndex(parseInt(e.target.dataset.referTo, 10));
-          // this.listenRemoveBtn();
-          // this.listenDragStartEnd();
-        }
-      });
-    });
-  }
-
-  static listenDragStartEnd() {
-    const draggables = document.querySelectorAll('.draggable');
-    draggables.forEach((draggable) => {
-      draggable.addEventListener('dragstart', () => {
-        draggable.classList.add('dragging');
-      });
-      draggable.addEventListener('dragend', () => {
-        draggable.classList.remove('dragging');
-        this.saveReorderedList();
-        this.populateUlTasksList(new ListManipulation());
-        this.changeStyleOnSelected();
-        this.listenRemoveBtn();
-        // this.listenDragStartEnd();
-        // this.listenDragOver();
-      });
-    });
-  }
-
-  static listenDragOver(container) {
-    container.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      const afterElement = this.getDragAfterElement(container, e.clientY);
-      const draggable = document.querySelector('.dragging');
-      if (afterElement == null) {
-        container.appendChild(draggable);
-      } else {
-        container.insertBefore(draggable, afterElement);
-      }
-    });
-  }
-
   static getDragAfterElement(container, y) {
     const draggableElements = [...container.querySelectorAll('.draggable:not(.dragging)')];
 
@@ -126,6 +109,14 @@ export default class Interact {
     }, { offset: Number.NEGATIVE_INFINITY }).element;
   }
 
+  static addTask(element) {
+    if (element.value.length) {
+      new ListManipulation().addToList(element.value);
+      element.value = '';
+      this.updateDomRemoveDrag();
+    }
+  }
+
   static saveReorderedList() {
     const newOrder = document.querySelectorAll('.tasks_list > *');
     const reOrderedArray = [];
@@ -133,7 +124,6 @@ export default class Interact {
       reOrderedArray.push(new Task(item.children[1].textContent, i, item.children[0].checked));
     });
     localStorage.setItem('ToDoList', JSON.stringify(reOrderedArray));
-    console.log(reOrderedArray);
   }
 
   static unselectAll(nodeList) {
@@ -149,5 +139,10 @@ export default class Interact {
       notSelected.children[2].textContent = 'more_vert';
       notSelected.children[2].style.cursor = 'move';
     });
+  }
+
+  static updateDomRemoveDrag() {
+    this.listenRemoveBtn();
+    this.listenDragStartEnd();
   }
 }

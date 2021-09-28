@@ -63,7 +63,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _storage_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(3);
 // eslint-disable-next-line import/no-cycle
 
-// import Task from './task.js';
 
 class ListOfTasks {
   constructor(storageKey = 'ToDoList') {
@@ -83,38 +82,10 @@ class ListOfTasks {
     return sortedList.sort((a, b) => (a.index > b.index ? 1 : -1));
   }
 
-  // addToList(descr, index = this.tasksList.length, done = false) {
-  //   this.tasksList.push(new Task(descr, index, done));
-  //   Storage.saveAndUpdate(this.tasksList);
-  // }
-
   changeStatusDone(index) {
     this.tasksList[index].done = !this.tasksList[index].done;
     return this.tasksList;
   }
-
-  // editDescription(index, newDescription) {
-  //   this.tasksList[index].description = newDescription;
-  //   return this.tasksList;
-  // }
-
-  // overrideIndexes(list) {
-  //   this.list = list;
-  //   this.list.forEach((task, i) => {
-  //     task.index = i;
-  //   });
-  //   return this.list;
-  // }
-
-  // removeByIndex(ind) {
-  //   const filtered = this.tasksList.filter((task) => task.index !== ind);
-  //   Storage.saveAndUpdate(this.overrideIndexes(filtered));
-  // }
-
-  // removeAllDone() {
-  //   const filtered = this.tasksList.filter((task) => task.done === false);
-  //   Storage.saveAndUpdate(this.overrideIndexes(filtered));
-  // }
 }
 
 
@@ -136,6 +107,7 @@ class Storage {
   static saveAndUpdate(objToStore, name = 'ToDoList') {
     localStorage.setItem(name, JSON.stringify(objToStore));
     _interact_js__WEBPACK_IMPORTED_MODULE_1__["default"].populateUlTasksList(new _list_js__WEBPACK_IMPORTED_MODULE_0__["default"]());
+    _interact_js__WEBPACK_IMPORTED_MODULE_1__["default"].changeStyleOnSelected();
   }
 
   static readFromStorage(name = 'ToDoList') {
@@ -158,10 +130,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _elements_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(5);
 /* harmony import */ var _manipulateList_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(1);
+/* harmony import */ var _task_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(6);
 /* eslint-disable import/no-cycle */
 
 
-// import ListOfTasks from './list.js';
+
 
 class Interact {
   static populateUlTasksList(list) {
@@ -182,18 +155,12 @@ class Interact {
     const addInput = document.getElementById('add_item');
     addInput.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') {
-        if (addInput.value.length) {
-          new _manipulateList_js__WEBPACK_IMPORTED_MODULE_1__["default"]().addToList(addInput.value);
-          addInput.value = '';
-        }
+        this.addTask(addInput);
       }
     });
     const addIcon = document.querySelector('.oneMoreTask i');
     addIcon.addEventListener('click', () => {
-      if (addInput.value.length) {
-        new _manipulateList_js__WEBPACK_IMPORTED_MODULE_1__["default"]().addToList(addInput.value);
-        addInput.value = '';
-      }
+      this.addTask(addInput);
     });
   }
 
@@ -201,7 +168,115 @@ class Interact {
     const clearBtn = document.querySelector('.clearBtn');
     clearBtn.addEventListener('click', () => {
       new _manipulateList_js__WEBPACK_IMPORTED_MODULE_1__["default"]().removeAllDone();
+      this.updateDomRemoveDrag();
     });
+  }
+
+  static listenRemoveBtn() {
+    const removeButtons = document.querySelectorAll('.tasks_list i');
+    removeButtons.forEach((removeBtn) => {
+      removeBtn.addEventListener('click', (e) => {
+        if (e.target.textContent === 'delete_forever') {
+          new _manipulateList_js__WEBPACK_IMPORTED_MODULE_1__["default"]().removeByIndex(parseInt(e.target.dataset.referTo, 10));
+          this.updateDomRemoveDrag();
+        }
+      });
+    });
+  }
+
+  static listenDragStartEnd() {
+    const draggables = document.querySelectorAll('.draggable');
+    draggables.forEach((draggable) => {
+      draggable.addEventListener('dragstart', () => {
+        draggable.classList.add('dragging');
+      });
+      draggable.addEventListener('dragend', () => {
+        draggable.classList.remove('dragging');
+        this.saveReorderedList();
+        this.populateUlTasksList(new _manipulateList_js__WEBPACK_IMPORTED_MODULE_1__["default"]());
+        this.changeStyleOnSelected();
+        this.updateDomRemoveDrag();
+      });
+    });
+  }
+
+  static listenDragOver(container) {
+    container.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      const afterElement = this.getDragAfterElement(container, e.clientY);
+      const draggable = document.querySelector('.dragging');
+      if (afterElement == null) {
+        container.appendChild(draggable);
+      } else {
+        container.insertBefore(draggable, afterElement);
+      }
+    });
+  }
+
+  static changeStyleOnSelected() {
+    const allLis = document.querySelectorAll('.tasks_list > *');
+    allLis.forEach((li) => {
+      li.addEventListener('click', () => {
+        // 1. reset style for all list items
+        this.unselectAll(allLis);
+        li.classList.add('selected');
+        this.unselectedDefaultStyle();
+        // 2. set style only for clicked
+        li.style.backgroundColor = 'hsl(40deg 91% 75% / 75%)';
+        li.children[2].textContent = 'delete_forever';
+        li.children[2].style.cursor = 'pointer';
+      });
+    });
+  }
+
+  static getDragAfterElement(container, y) {
+    const draggableElements = [...container.querySelectorAll('.draggable:not(.dragging)')];
+
+    return draggableElements.reduce((closest, child) => {
+      const box = child.getBoundingClientRect();
+      const offset = y - box.top - box.height / 2;
+      if (offset < 0 && offset > closest.offset) {
+        return { offset, element: child };
+      }
+      return closest;
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
+  }
+
+  static addTask(element) {
+    if (element.value.length) {
+      new _manipulateList_js__WEBPACK_IMPORTED_MODULE_1__["default"]().addToList(element.value);
+      element.value = '';
+      this.updateDomRemoveDrag();
+    }
+  }
+
+  static saveReorderedList() {
+    const newOrder = document.querySelectorAll('.tasks_list > *');
+    const reOrderedArray = [];
+    newOrder.forEach((item, i) => {
+      reOrderedArray.push(new _task_js__WEBPACK_IMPORTED_MODULE_2__["default"](item.children[1].textContent, i, item.children[0].checked));
+    });
+    localStorage.setItem('ToDoList', JSON.stringify(reOrderedArray));
+  }
+
+  static unselectAll(nodeList) {
+    nodeList.forEach((item) => {
+      item.classList.remove('selected');
+    });
+  }
+
+  static unselectedDefaultStyle() {
+    const allOthers = document.querySelectorAll('.tasks_list > *:not(.selected)');
+    allOthers.forEach((notSelected) => {
+      notSelected.style.backgroundColor = 'white';
+      notSelected.children[2].textContent = 'more_vert';
+      notSelected.children[2].style.cursor = 'move';
+    });
+  }
+
+  static updateDomRemoveDrag() {
+    this.listenRemoveBtn();
+    this.listenDragStartEnd();
   }
 }
 
@@ -216,7 +291,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _storage_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(3);
 /* harmony import */ var _manipulateList_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(1);
+/* harmony import */ var _interact_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(4);
 /* eslint-disable import/no-cycle */
+
 
 
 
@@ -229,6 +306,7 @@ class Elmnts {
     checkbox.addEventListener('change', () => {
       const updatedList = listToUpdate.changeStatusDone(taskIndex);
       _storage_js__WEBPACK_IMPORTED_MODULE_0__["default"].saveAndUpdate(updatedList);
+      _interact_js__WEBPACK_IMPORTED_MODULE_2__["default"].updateDomRemoveDrag();
     });
     return checkbox;
   }
@@ -244,6 +322,7 @@ class Elmnts {
       if (e.key === 'Enter') {
         const updatedList = new _manipulateList_js__WEBPACK_IMPORTED_MODULE_1__["default"]().editDescription(taskIndex, e.target.innerText);
         _storage_js__WEBPACK_IMPORTED_MODULE_0__["default"].saveAndUpdate(updatedList);
+        _interact_js__WEBPACK_IMPORTED_MODULE_2__["default"].updateDomRemoveDrag();
       }
     });
     return description;
@@ -261,33 +340,14 @@ class Elmnts {
     this.task = task;
     const li = document.createElement('li');
     li.id = this.task.index;
+    li.classList.add('draggable');
+    li.setAttribute('draggable', true);
     const ckbox = this.createCkBox(this.task.index, this.task.done, listToUpdate);
-    const descriptiveP = this.createTaskDescr(this.task.index, this.task.description, listToUpdate);
+    const descriptiveP = this.createTaskDescr(this.task.index, this.task.description);
     const icon = this.createIcon(this.task.index);
     li.appendChild(ckbox);
     li.appendChild(descriptiveP);
     li.appendChild(icon);
-    li.addEventListener('click', () => {
-      // 1. reset style for all list items
-      const allLis = document.querySelectorAll('.tasks_list > *');
-      allLis.forEach((li) => {
-        li.style.backgroundColor = 'white';
-        li.children[2].textContent = 'more_vert';
-        li.children[2].style.cursor = 'move';
-      });
-
-      // 2. set style only for clicked
-      li.style.backgroundColor = 'hsl(40deg 91% 75% / 75%)';
-      icon.textContent = 'delete_forever';
-      icon.style.cursor = 'pointer';
-
-      // 3. event Listener for remove Button
-      icon.addEventListener('click', () => {
-        if (icon.textContent === 'delete_forever') {
-          new _manipulateList_js__WEBPACK_IMPORTED_MODULE_1__["default"]().removeByIndex(parseInt(icon.dataset.referTo, 10));
-        }
-      });
-    });
     return li;
   }
 }
@@ -659,7 +719,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "* {\r\n  box-sizing: border-box;\r\n  margin: 0;\r\n  padding: 0;\r\n}\r\n\r\n* ul li {\r\n  list-style-type: none;\r\n}\r\n\r\nbody {\r\n  display: flex;\r\n  justify-content: center;\r\n  align-items: center;\r\n  height: 100vh;\r\n  font-family: 'Open Sans', 'Lucida Grande', tahoma, verdana, arial, sans-serif;\r\n  font-size: 0.9375rem;\r\n  font-weight: 400;\r\n  line-height: 1.25rem;\r\n  color: #545862;\r\n  background-color: #f6f6f6;\r\n}\r\n\r\n.list_container {\r\n  width: 90%;\r\n  max-width: 30rem;\r\n  box-shadow:\r\n    0.25rem 0.25rem 1rem rgba(0, 0, 0, 0.08),\r\n    -0.25rem -0.05rem 1rem 0 rgba(0, 0, 0, 0.08);\r\n}\r\n\r\n.list_container > *,\r\n.tasks_list li {\r\n  padding: 1rem;\r\n  border-bottom: 1px solid rgba(0, 0, 0, 0.08);\r\n  background-color: #fff;\r\n}\r\n\r\n.list_container > *:last-child {\r\n  background-color: transparent;\r\n}\r\n\r\n.list_container i {\r\n  color: rgba(0, 0, 0, 0.3);\r\n  text-align: right;\r\n  cursor: pointer;\r\n}\r\n\r\n.title,\r\n.oneMoreTask {\r\n  display: grid;\r\n  grid-template-columns: 90% 10%;\r\n  align-items: center;\r\n}\r\n\r\n.title i {\r\n  color: rgba(0, 0, 0, 0.45);\r\n}\r\n\r\n.tasks_list i {\r\n  cursor: move;\r\n}\r\n\r\n.oneMoreTask input,\r\n.oneMoreTask input:focus {\r\n  border: none;\r\n  outline: none;\r\n  height: 100%;\r\n  font-size: inherit;\r\n}\r\n\r\n.oneMoreTask .add_item {\r\n  font-style: italic;\r\n}\r\n\r\n.oneMoreTask .add_item::placeholder {\r\n  font-style: italic;\r\n  color: rgba(0, 0, 0, 0.25);\r\n}\r\n\r\n.tasks_list {\r\n  display: flex;\r\n  flex-direction: column;\r\n  padding: 0;\r\n}\r\n\r\n.tasks_list li {\r\n  display: grid;\r\n  grid-template-columns: 5% 85% 10%;\r\n  align-items: center;\r\n}\r\n\r\n.tasks_list li .description {\r\n  margin-left: 0.25rem;\r\n}\r\n\r\n.tasks_list li.done .description {\r\n  color: rgba(0, 0, 0, 0.45);\r\n  text-decoration: line-through;\r\n}\r\n\r\n.clearBtn {\r\n  text-align: center;\r\n  opacity: 0.5;\r\n  background-color: rgba(0, 0, 0, 0.25);\r\n  cursor: pointer;\r\n}\r\n\r\n.clearBtn:hover {\r\n  opacity: 1;\r\n  text-decoration: underline;\r\n}\r\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "* {\r\n  box-sizing: border-box;\r\n  margin: 0;\r\n  padding: 0;\r\n}\r\n\r\n* ul li {\r\n  list-style-type: none;\r\n}\r\n\r\nbody {\r\n  display: flex;\r\n  justify-content: center;\r\n  align-items: center;\r\n  height: 100vh;\r\n  font-family: 'Open Sans', 'Lucida Grande', tahoma, verdana, arial, sans-serif;\r\n  font-size: 0.9375rem;\r\n  font-weight: 400;\r\n  line-height: 1.25rem;\r\n  color: #545862;\r\n  background-color: #f6f6f6;\r\n}\r\n\r\n.list_container {\r\n  width: 90%;\r\n  max-width: 30rem;\r\n  box-shadow:\r\n    0.25rem 0.25rem 1rem rgba(0, 0, 0, 0.08),\r\n    -0.25rem -0.05rem 1rem 0 rgba(0, 0, 0, 0.08);\r\n}\r\n\r\n.list_container > *,\r\n.tasks_list li {\r\n  padding: 1rem;\r\n  border-bottom: 1px solid rgba(0, 0, 0, 0.08);\r\n  background-color: #fff;\r\n}\r\n\r\n.list_container > *:last-child {\r\n  background-color: transparent;\r\n}\r\n\r\n.list_container i {\r\n  color: rgba(0, 0, 0, 0.3);\r\n  text-align: right;\r\n  cursor: pointer;\r\n}\r\n\r\n.title,\r\n.oneMoreTask {\r\n  display: grid;\r\n  grid-template-columns: 90% 10%;\r\n  align-items: center;\r\n}\r\n\r\n.title i {\r\n  color: rgba(0, 0, 0, 0.45);\r\n}\r\n\r\n.tasks_list i {\r\n  cursor: move;\r\n}\r\n\r\n.oneMoreTask input,\r\n.oneMoreTask input:focus {\r\n  border: none;\r\n  outline: none;\r\n  height: 100%;\r\n  font-size: inherit;\r\n}\r\n\r\n.oneMoreTask .add_item {\r\n  font-style: italic;\r\n}\r\n\r\n.oneMoreTask .add_item::placeholder {\r\n  font-style: italic;\r\n  color: rgba(0, 0, 0, 0.25);\r\n}\r\n\r\n.tasks_list {\r\n  display: flex;\r\n  flex-direction: column;\r\n  padding: 0;\r\n}\r\n\r\n.tasks_list li {\r\n  display: grid;\r\n  grid-template-columns: 5% 85% 10%;\r\n  align-items: center;\r\n}\r\n\r\n.tasks_list li .description {\r\n  margin-left: 0.25rem;\r\n}\r\n\r\n.tasks_list li.done .description {\r\n  color: rgba(0, 0, 0, 0.45);\r\n  text-decoration: line-through;\r\n}\r\n\r\n.clearBtn {\r\n  text-align: center;\r\n  opacity: 0.5;\r\n  background-color: rgba(0, 0, 0, 0.25);\r\n  cursor: pointer;\r\n}\r\n\r\n.clearBtn:hover {\r\n  opacity: 1;\r\n  text-decoration: underline;\r\n}\r\n\r\n.draggable.dragging {\r\n  border: 2px dashed hsl(40deg 91% 75%);\r\n  background-color: hsl(40deg 91% 75% / 35%);\r\n  opacity: 0.85;\r\n}\r\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -863,11 +923,18 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const tasks = new _manipulateList_js__WEBPACK_IMPORTED_MODULE_0__["default"]();
-window.onload = () => {
+
+function start() {
   _interact_js__WEBPACK_IMPORTED_MODULE_1__["default"].populateUlTasksList(tasks);
-};
-_interact_js__WEBPACK_IMPORTED_MODULE_1__["default"].listenForNewItems();
-_interact_js__WEBPACK_IMPORTED_MODULE_1__["default"].listenClearBtn();
+  _interact_js__WEBPACK_IMPORTED_MODULE_1__["default"].changeStyleOnSelected();
+  _interact_js__WEBPACK_IMPORTED_MODULE_1__["default"].listenForNewItems();
+  _interact_js__WEBPACK_IMPORTED_MODULE_1__["default"].listenClearBtn();
+  _interact_js__WEBPACK_IMPORTED_MODULE_1__["default"].listenRemoveBtn();
+  _interact_js__WEBPACK_IMPORTED_MODULE_1__["default"].listenDragStartEnd();
+  _interact_js__WEBPACK_IMPORTED_MODULE_1__["default"].listenDragOver(document.querySelector('.tasks_list'));
+}
+
+start();
 
 })();
 
