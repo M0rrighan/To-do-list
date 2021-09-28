@@ -110,3 +110,9 @@ body {
   opacity: 1;
   text-decoration: underline;
 }
+
+.draggable.dragging {
+  border: 1px solid red;
+  background-color: red;
+  opacity: 0.75;
+}
