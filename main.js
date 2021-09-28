@@ -933,7 +933,6 @@ function start() {
   _interact_js__WEBPACK_IMPORTED_MODULE_1__["default"].listenDragStartEnd();
   _interact_js__WEBPACK_IMPORTED_MODULE_1__["default"].listenDragOver(document.querySelector('.tasks_list'));
 }
-
 start();
 
 })();
