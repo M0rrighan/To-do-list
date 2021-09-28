@@ -14,5 +14,4 @@ function start() {
   Interact.listenDragStartEnd();
   Interact.listenDragOver(document.querySelector('.tasks_list'));
 }
-
 start();
