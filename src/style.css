@@ -110,3 +110,9 @@ body {
   opacity: 1;
   text-decoration: underline;
 }
+
+.draggable.dragging {
+  border: 2px dashed hsl(40deg 91% 75%);
+  background-color: hsl(40deg 91% 75% / 35%);
+  opacity: 0.85;
+}

@@ -1,6 +1,7 @@
 /* eslint-disable import/no-cycle */
 import Storage from './storage.js';
 import ListManipulation from './manipulateList.js';
+import Interact from './interact.js';
 
 export default class Elmnts {
   static createCkBox(taskIndex, taskStatusDone, listToUpdate) {
@@ -11,6 +12,7 @@ export default class Elmnts {
     checkbox.addEventListener('change', () => {
       const updatedList = listToUpdate.changeStatusDone(taskIndex);
       Storage.saveAndUpdate(updatedList);
+      Interact.updateDomRemoveDrag();
     });
     return checkbox;
   }
@@ -26,6 +28,7 @@ export default class Elmnts {
       if (e.key === 'Enter') {
         const updatedList = new ListManipulation().editDescription(taskIndex, e.target.innerText);
         Storage.saveAndUpdate(updatedList);
+        Interact.updateDomRemoveDrag();
       }
     });
     return description;
@@ -43,33 +46,14 @@ export default class Elmnts {
     this.task = task;
     const li = document.createElement('li');
     li.id = this.task.index;
+    li.classList.add('draggable');
+    li.setAttribute('draggable', true);
     const ckbox = this.createCkBox(this.task.index, this.task.done, listToUpdate);
-    const descriptiveP = this.createTaskDescr(this.task.index, this.task.description, listToUpdate);
+    const descriptiveP = this.createTaskDescr(this.task.index, this.task.description);
     const icon = this.createIcon(this.task.index);
     li.appendChild(ckbox);
     li.appendChild(descriptiveP);
     li.appendChild(icon);
-    li.addEventListener('click', () => {
-      // 1. reset style for all list items
-      const allLis = document.querySelectorAll('.tasks_list > *');
-      allLis.forEach((li) => {
-        li.style.backgroundColor = 'white';
-        li.children[2].textContent = 'more_vert';
-        li.children[2].style.cursor = 'move';
-      });
-
-      // 2. set style only for clicked
-      li.style.backgroundColor = 'hsl(40deg 91% 75% / 75%)';
-      icon.textContent = 'delete_forever';
-      icon.style.cursor = 'pointer';
-
-      // 3. event Listener for remove Button
-      icon.addEventListener('click', () => {
-        if (icon.textContent === 'delete_forever') {
-          new ListManipulation().removeByIndex(parseInt(icon.dataset.referTo, 10));
-        }
-      });
-    });
     return li;
   }
 }

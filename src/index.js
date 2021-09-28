@@ -4,8 +4,15 @@ import Interact from './interact.js';
 import './style.css';
 
 const tasks = new ListManipulation();
-window.onload = () => {
+
+function start() {
   Interact.populateUlTasksList(tasks);
-};
-Interact.listenForNewItems();
-Interact.listenClearBtn();
+  Interact.changeStyleOnSelected();
+  Interact.listenForNewItems();
+  Interact.listenClearBtn();
+  Interact.listenRemoveBtn();
+  Interact.listenDragStartEnd();
+  Interact.listenDragOver(document.querySelector('.tasks_list'));
+}
+
+start();

@@ -6,6 +6,7 @@ export default class Storage {
   static saveAndUpdate(objToStore, name = 'ToDoList') {
     localStorage.setItem(name, JSON.stringify(objToStore));
     Interact.populateUlTasksList(new ListOfTasks());
+    Interact.changeStyleOnSelected();
   }
 
   static readFromStorage(name = 'ToDoList') {
