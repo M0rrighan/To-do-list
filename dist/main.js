@@ -23,8 +23,11 @@ class ListManipulation extends _list_js__WEBPACK_IMPORTED_MODULE_0__["default"] 
   }
 
   addToList(descr, index = this.tasksList.length, done = false) {
-    this.tasksList.push(new _task_js__WEBPACK_IMPORTED_MODULE_2__["default"](descr, index, done));
+    const newTask = new _task_js__WEBPACK_IMPORTED_MODULE_2__["default"](descr, index, done);
+    this.tasksList.push(newTask);
     _storage_js__WEBPACK_IMPORTED_MODULE_1__["default"].saveAndUpdate(this.tasksList);
+
+    return newTask;
   }
 
   editDescription(index, newDescription) {
@@ -164,6 +167,14 @@ class Interact {
     });
   }
 
+  static addTask(element) {
+    if (element.value.length) {
+      new _manipulateList_js__WEBPACK_IMPORTED_MODULE_1__["default"]().addToList(element.value);
+      element.value = '';
+      this.updateDomRemoveDrag();
+    }
+  }
+
   static listenClearBtn() {
     const clearBtn = document.querySelector('.clearBtn');
     clearBtn.addEventListener('click', () => {
@@ -240,14 +251,6 @@ class Interact {
       }
       return closest;
     }, { offset: Number.NEGATIVE_INFINITY }).element;
-  }
-
-  static addTask(element) {
-    if (element.value.length) {
-      new _manipulateList_js__WEBPACK_IMPORTED_MODULE_1__["default"]().addToList(element.value);
-      element.value = '';
-      this.updateDomRemoveDrag();
-    }
   }
 
   static saveReorderedList() {
