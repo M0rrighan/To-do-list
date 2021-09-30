@@ -31,6 +31,14 @@ export default class Interact {
     });
   }
 
+  static addTask(element) {
+    if (element.value.length) {
+      new ListManipulation().addToList(element.value);
+      element.value = '';
+      this.updateDomRemoveDrag();
+    }
+  }
+
   static listenClearBtn() {
     const clearBtn = document.querySelector('.clearBtn');
     clearBtn.addEventListener('click', () => {
@@ -107,14 +115,6 @@ export default class Interact {
       }
       return closest;
     }, { offset: Number.NEGATIVE_INFINITY }).element;
-  }
-
-  static addTask(element) {
-    if (element.value.length) {
-      new ListManipulation().addToList(element.value);
-      element.value = '';
-      this.updateDomRemoveDrag();
-    }
   }
 
   static saveReorderedList() {

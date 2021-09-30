@@ -9,8 +9,11 @@ export default class ListManipulation extends ListOfTasks {
   }
 
   addToList(descr, index = this.tasksList.length, done = false) {
-    this.tasksList.push(new Task(descr, index, done));
+    const newTask = new Task(descr, index, done);
+    this.tasksList.push(newTask);
     Storage.saveAndUpdate(this.tasksList);
+
+    return newTask;
   }
 
   editDescription(index, newDescription) {
