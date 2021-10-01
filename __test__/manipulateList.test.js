@@ -134,3 +134,54 @@ describe('#addToList is working properly, passing a fake Storage.key as attribut
     expect(lastAddedChild.children[0].checked).toBe(false);
   });
 });
+
+describe('#removeByIndex is working properly', () => {
+  test('if only one <li> is deleted from html ul', () => {
+    // Arrange
+    const tasksUL = document.querySelector('.tasks_list');
+    tasksUL.innerHTML = ''; // emties the tasksUL
+    const currentList = new List('fakeStorageKey'); // emtpy array
+    currentList.addToList('Task 0');
+    currentList.addToList('Task 1');
+    currentList.addToList('Task 2');
+    currentList.addToList('Task 3');
+    currentList.addToList('Task 4');
+    const lengthBefore = tasksUL.children.length; // 5
+    // Act: call #removeByIndex
+    const target = 2;
+    currentList.removeByIndex(target);
+    // Arrange
+    const lengthAfter = tasksUL.children.length; // 4
+    // Assert
+    expect(lengthBefore - lengthAfter).toEqual(1);
+  });
+  test('if the deleted <li> is the targeted one', () => {
+    // Arrange
+    const tasksUL = document.querySelector('.tasks_list');
+    tasksUL.innerHTML = ''; // emties the tasksUL
+    const currentList = new List('fakeStorageKey'); // emtpy array
+    currentList.addToList('Task 0');
+    currentList.addToList('Task 1');
+    currentList.addToList('Task 2');
+    currentList.addToList('Task 3');
+    const fakeTarget = 2;
+    const toDelete = tasksUL.querySelector(`li:nth-child(${fakeTarget})`);
+    const fakeClickedBtn = toDelete.children[2]; // > li i
+    // Act: call #removeByIndex
+    currentList.removeByIndex(parseInt(fakeClickedBtn.dataset.referTo, 10));
+    // Assert
+    expect(
+      // expect the deleted <li> to have id that equals to
+      // the data-refer-to attribute of the 'clicked' button-like <i> tag
+      toDelete.id,
+    ).toEqual(`${fakeClickedBtn.dataset.referTo}`);
+    // Arrange
+    const paragraphs = Array.from(tasksUL.querySelectorAll('p'));
+    // Assert
+    // description of the deleted task should not be found in the updated UL
+    expect(paragraphs).toEqual(expect.not.arrayContaining([`Task ${fakeTarget - 1}`]));
+  });
+});
+
+
+
