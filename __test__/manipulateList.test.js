@@ -3,7 +3,6 @@
  */
 
 import List from '../src/manipulateList.js';
-import Task from '../src/task.js';
 
 const innerHtml = `
  <div class="oneMoreTask">
@@ -182,6 +181,3 @@ describe('#removeByIndex is working properly', () => {
     expect(paragraphs).toEqual(expect.not.arrayContaining([`Task ${fakeTarget - 1}`]));
   });
 });
-
-
-
