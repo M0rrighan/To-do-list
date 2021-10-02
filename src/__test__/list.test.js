@@ -75,4 +75,15 @@ describe('List', () => {
       expect(li.length).toBe(0);
     });
   });
+
+  describe('Update Index', () => {
+    test('should update item index', () => {
+      tasks.addToList('Test 2');
+      tasks.addToList('Test 3');
+
+      const reOrderedLists = tasks.changeItemIndex(tasks.tasksList, 0, 1);
+      expect(reOrderedLists[0].description).toBe('Test 3');
+      expect(reOrderedLists[0].index).toBe(1);
+    });
+  });
 });
