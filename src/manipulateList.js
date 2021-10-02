@@ -36,6 +36,15 @@ export default class ListManipulation extends ListOfTasks {
 
   removeAllDone() {
     const filtered = this.tasksList.filter((task) => task.done === false);
+    this.tasksList = filtered;
     Storage.saveAndUpdate(this.overrideIndexes(filtered));
+  }
+
+  changeItemIndex(list, oldIndex, newIndex) {
+    const temp = list[newIndex];
+    list[newIndex] = list[oldIndex];
+    list[oldIndex] = temp;
+    this.tasksList = list;
+    return list;
   }
 }
