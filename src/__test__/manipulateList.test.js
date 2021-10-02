@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 
-import List from '../src/manipulateList.js';
+import List from '../manipulateList.js';
 
 const innerHtml = `
  <div class="oneMoreTask">
